@@ -64,6 +64,7 @@ export function QueueView({
   const [comment, setComment] = useState("");
   const [escalateReason, setEscalateReason] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const detail = openId ? details[openId] : null;
@@ -74,6 +75,7 @@ export function QueueView({
   ): Promise<T> {
     setBusy(true);
     setMessage(null);
+    setNotice(null);
     const res = await fn();
     setBusy(false);
     if (!res.ok) setMessage(res.error ?? "Failed");
@@ -138,6 +140,7 @@ export function QueueView({
           setComment("");
           setEscalateReason("");
           setMessage(null);
+          setNotice(null);
         }}
       />
       <DetailDrawer
@@ -202,6 +205,7 @@ export function QueueView({
             </section>
 
             {message && <p className="text-sm text-destructive">{message}</p>}
+            {notice && <p className="text-sm text-emerald-600">{notice}</p>}
 
             {!isDecided && (
               <section className="space-y-3 rounded-md border p-3">
@@ -280,7 +284,7 @@ export function QueueView({
                             }),
                           );
                           if (res.ok && res.pending) {
-                            setMessage(
+                            setNotice(
                               "Sent for senior_analyst approval (maker-checker).",
                             );
                           }

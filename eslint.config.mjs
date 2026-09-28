@@ -8,7 +8,15 @@ const __dirname = dirname(__filename);
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
 const eslintConfig = [
-  { ignores: ["node_modules/**", ".next/**", "prisma/generated/**", "out/**"] },
+  {
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "prisma/generated/**",
+      "out/**",
+      "next-env.d.ts",
+    ],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     // The security boundary: tool code must never touch the database directly.
