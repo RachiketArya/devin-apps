@@ -1,0 +1,46 @@
+// KYC review queue schema — one file per tool under prisma/schema/.
+// Columns prefixed `pii` are masked server-side for users without `pii:read`.
+
+model KycCase {
+  id           String   @id @default(cuid())
+  externalRef  String   @unique // e.g. KYC-1001
+  entityType   String // individual | business
+  riskScore    Int // 0-100
+  status       String   @default("new") // new | in_review | escalated | approved | rejected
+  assigneeId   String?
+  assignee     User?    @relation("CaseAssignee", fields: [assigneeId], references: [id])
+  // PII columns
+  piiFullName  String
+  piiEmail     String
+  piiDob       String?
+  piiAddress   String?
+  piiTaxId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  documents KycDocument[]
+  notes     KycNote[]
+
+  @@index([status])
+  @@index([assigneeId])
+}
+
+model KycDocument {
+  id         String   @id @default(cuid())
+  caseId     String
+  case       KycCase  @relation(fields: [caseId], references: [id])
+  fileName   String
+  uploadedAt DateTime @default(now())
+}
+
+model KycNote {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      KycCase  @relation(fields: [caseId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([caseId])
+}

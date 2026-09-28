@@ -1,0 +1,25 @@
+# https://docs.devin.ai/onboard-devin/environment-yaml
+initialize:
+  - uses: github.com/actions/setup-node@v4
+    with:
+      node-version: "22"
+  - run: corepack enable && corepack prepare pnpm@10.17.1 --activate
+maintenance: |
+  pnpm install
+  pnpm db:reset
+knowledge:
+  - name: lint
+    contents: pnpm lint
+  - name: typecheck
+    contents: pnpm typecheck
+  - name: test
+    contents: pnpm test
+  - name: startup
+    contents: |
+      pnpm db:reset   # idempotent: push schema + seed users and KYC cases
+      pnpm dev        # Next.js on http://localhost:3000
+  - name: sign-in
+    contents: |
+      Dev sign-in (dev only): http://localhost:3000/dev/sign-in?email=<email>
+      Seeded users: analyst@dev.local, senior@dev.local, finance@dev.local,
+      engineer@dev.local, admin@dev.local
