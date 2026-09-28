@@ -1,0 +1,36 @@
+// Refunds dashboard schema — one file per tool under prisma/schema/.
+// Columns prefixed `pii` are masked server-side for users without `pii:read`.
+// Money is stored in minor units (cents); `usdEquivCents` is the USD
+// equivalent at the tool's fixed demo rate table and drives the approval
+// threshold. `cardLast4` stores exactly four digits — never a full PAN.
+// requestedById/approvedById are plain columns (no FK): adding a relation to
+// User would require editing the platform-owned base.prisma.
+
+model RefundRequest {
+  id                String    @id @default(cuid())
+  externalRef       String    @unique // e.g. RFD-1001
+  transactionId     String // original transaction being refunded
+  cardLast4         String // exactly 4 digits
+  amountCents       Int
+  currency          String // USD | EUR | GBP
+  usdEquivCents     Int
+  reasonCode        String
+  status            String    @default("requested") // requested | pending_approval | approved | rejected | paid
+  rejectionReason   String?
+  requestedById     String
+  requestedByEmail  String // denormalized for display (no FK to User)
+  approvedById      String?
+  approvedByEmail   String?
+  approvalRequestId String? // links a pending_approval refund to its ApprovalRequest
+  decidedAt         DateTime?
+  paymentRef        String? // reference returned by the PaymentsGateway
+  paidAt            DateTime?
+  // PII columns
+  piiFullName       String
+  piiEmail          String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([status])
+  @@index([requestedById])
+}

@@ -1,6 +1,7 @@
 import type { Role } from "@/platform/auth/types";
 import type { Tx } from "@/platform/db";
 import { kyc } from "@/apps/kyc/tool";
+import { refunds } from "@/apps/refunds/tool";
 
 export interface ToolDef {
   /** Stable key used in audit events and approval requests. */
@@ -23,6 +24,7 @@ export interface ToolDef {
  */
 export const tools: ToolDef[] = [
   kyc,
+  refunds,
   // register new tools here — one line each
 ];
 
