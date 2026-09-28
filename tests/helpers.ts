@@ -20,6 +20,7 @@ export async function resetDb() {
   await raw.kycDocument.deleteMany();
   await raw.approvalRequest.deleteMany();
   await raw.kycCase.deleteMany();
+  await raw.refundRequest.deleteMany();
   await raw.auditEvent.deleteMany();
   await raw.user.deleteMany();
   await raw.user.createMany({ data: SEED_USERS });
