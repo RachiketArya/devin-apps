@@ -11,9 +11,10 @@ The first tool on the road is the **KYC review queue** (`src/apps/kyc/`).
 ## Setup
 
 ```bash
-pnpm install        # also runs prisma generate
-pnpm db:reset       # prisma db push --force-reset + seed
-pnpm dev            # http://localhost:3000
+cp .env.example .env  # dev defaults; never committed
+pnpm install          # also runs prisma generate
+pnpm db:reset         # prisma db push --force-reset + seed
+pnpm dev              # http://localhost:3000
 ```
 
 Stack: Next.js (App Router) · TypeScript strict · Prisma · SQLite dev /
@@ -37,6 +38,8 @@ checks there is a one-step route: `/dev/sign-in?email=<email>&next=<path>`.
 - **Identity** — `IdentityProvider` interface; dev provider (signed cookie, one
   seeded user per role) + `EntraIdentityProvider` stub documenting the
   OIDC/`x-ms-client-principal` switch. `IDENTITY_PROVIDER` env selects it.
+  Production refuses to boot with the dev provider or the default
+  `AUTH_SECRET` (`src/platform/env.ts` via `src/instrumentation.ts`).
 - **Authorization** — `authorize(user, permission)`, permission→roles map
   merged from platform + every registered tool. **Default deny.**
 - **Audit** — append-only `AuditEvent` written in the same transaction as every

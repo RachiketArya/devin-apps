@@ -1,8 +1,9 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
+import { DEV_AUTH_SECRET } from "@/platform/env";
 
 export const SESSION_COOKIE = "pa_session";
 
-const secret = process.env.AUTH_SECRET ?? "dev-only-insecure-secret";
+const secret = process.env.AUTH_SECRET ?? DEV_AUTH_SECRET;
 
 function hmac(payload: string): string {
   return createHmac("sha256", secret).update(payload).digest("base64url");

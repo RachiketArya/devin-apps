@@ -3,7 +3,9 @@
  * registered tool's seed() in one transaction. Tools supply seed data through
  * their ToolDef — adding a tool requires no change here.
  */
-process.loadEnvFile();
+import { existsSync } from "node:fs";
+
+if (existsSync(".env")) process.loadEnvFile();
 
 import { db } from "../src/platform/db";
 import { SEED_USERS } from "../src/platform/users";
