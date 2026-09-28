@@ -1,0 +1,65 @@
+// Platform schema: identity, audit, maker-checker.
+// JSON payloads are stored as String so the same schema works on SQLite
+// (dev/test) and Postgres (production target) — Prisma has no Json type on
+// SQLite, and String/JSONB-in-a-text-column reads identically on both.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      String // analyst | senior_analyst | finance_ops | engineer | admin
+  createdAt DateTime @default(now())
+
+  notes         KycNote[]
+  auditEvents   AuditEvent[]        @relation("AuditActor")
+  requested     ApprovalRequest[]   @relation("ApprovalRequester")
+  decided       ApprovalRequest[]   @relation("ApprovalDecider")
+  assignedCases KycCase[]           @relation("CaseAssignee")
+}
+
+model AuditEvent {
+  id         String   @id @default(cuid())
+  actorId    String
+  actor      User     @relation("AuditActor", fields: [actorId], references: [id])
+  actorRole  String
+  action     String
+  entityType String
+  entityId   String
+  before     String? // JSON diff snapshot
+  after      String? // JSON diff snapshot
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([action])
+}
+
+model ApprovalRequest {
+  id             String    @id @default(cuid())
+  toolKey        String
+  actionKey      String // key into the tool's approval-action registry
+  approverPermission String // permission required to decide this request
+  payload        String // JSON arguments for the action
+  reason         String?
+  status         String    @default("pending") // pending | approved | rejected
+  requesterId    String
+  requester      User      @relation("ApprovalRequester", fields: [requesterId], references: [id])
+  decidedById    String?
+  decidedBy      User?     @relation("ApprovalDecider", fields: [decidedById], references: [id])
+  decidedAt      DateTime?
+  decisionReason String?
+  createdAt      DateTime  @default(now())
+
+  @@index([status])
+  @@index([requesterId])
+}

@@ -1,0 +1,5 @@
+# The paved road: identity, authz, audit, maker-checker, PII masking, tx
+# wrappers, shared UI kit and the tool registry all live here. Changes to the
+# platform layer require platform-owner review.
+/src/platform/ @RachiketArya
+/prisma/schema/base.prisma @RachiketArya
