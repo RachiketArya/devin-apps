@@ -462,14 +462,12 @@ export function RefundsView({
                     ? "Created and sent for approval (maker-checker)."
                     : "Refund request created.",
                 );
+                setCustomerName("");
+                setCustomerEmail("");
+                setTransactionId("");
+                setCardLast4("");
+                setAmount("");
                 if (!res.pending) setCreateOpen(false);
-                else {
-                  setCustomerName("");
-                  setCustomerEmail("");
-                  setTransactionId("");
-                  setCardLast4("");
-                  setAmount("");
-                }
               }
             }}
           >
